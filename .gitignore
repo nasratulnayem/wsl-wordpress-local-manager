@@ -1,0 +1,25 @@
+.codex
+.git/
+code.txt
+
+data/*.dbpass
+data/mariadb/
+data/mariadb/**
+
+logs/
+logs/**
+
+panel/state.json
+
+sites/
+sites/**
+
+tmp/
+tmp/**
+
+source/wordpress.zip
+
+DynaByte Digital Design System/uploads/
+DynaByte Digital Design System/uploads/**
+
+.DS_Store

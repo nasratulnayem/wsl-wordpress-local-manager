@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+set -euo pipefail
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/../config/common.sh"
+
+ensure_dirs
+extract_wordpress_source
+require_wordpress_source
+
+name="${1:-}"
+if [[ -z "${name}" ]]; then
+  n=1
+  while [[ -d "$(site_dir "site${n}")" ]]; do
+    ((n++))
+  done
+  name="site${n}"
+fi
+
+if [[ ! "${name}" =~ ^[A-Za-z0-9_-]+$ ]]; then
+  echo "Invalid site name: ${name}" >&2
+  exit 1
+fi
+
+dir="$(site_dir "${name}")"
+if [[ -e "${dir}" ]]; then
+  echo "Site already exists: ${name}" >&2
+  exit 1
+fi
+
+"${ROOT_DIR}/bin/start" >/dev/null
+
+db_name="$(site_db_name "${name}")"
+db_user="$(site_db_user "${name}")"
+db_pass="$(random_secret 24)"
+printf '%s' "${db_pass}" > "$(site_db_password_file "${name}")"
+
+mkdir -p "${dir}"
+cp -a "${WORDPRESS_SOURCE}/." "${dir}/"
+
+args=$(mysql_root_args)
+# shellcheck disable=SC2086
+"${MYSQL_BIN}" ${args} <<SQL
+CREATE DATABASE IF NOT EXISTS \`${db_name}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER IF NOT EXISTS '${db_user}'@'${DB_HOST}' IDENTIFIED BY '${db_pass}';
+ALTER USER '${db_user}'@'${DB_HOST}' IDENTIFIED BY '${db_pass}';
+GRANT ALL PRIVILEGES ON \`${db_name}\`.* TO '${db_user}'@'${DB_HOST}';
+FLUSH PRIVILEGES;
+SQL
+
+cat > "${dir}/wp-config.php" <<PHP
+<?php
+define( 'DB_NAME', '${db_name}' );
+define( 'DB_USER', '${db_user}' );
+define( 'DB_PASSWORD', '${db_pass}' );
+define( 'DB_HOST', 'localhost:${MARIADB_SOCKET}' );
+define( 'DB_CHARSET', 'utf8mb4' );
+define( 'DB_COLLATE', '' );
+define( 'WP_HOME', '$(site_url "${name}")' );
+define( 'WP_SITEURL', '$(site_url "${name}")' );
+define( 'AUTOMATIC_UPDATER_DISABLED', true );
+define( 'FS_METHOD', 'direct' );
+define( 'COOKIE_DOMAIN', '' );
+define( 'COOKIEPATH', '/${name}/' );
+define( 'SITECOOKIEPATH', '/${name}/' );
+define( 'ADMIN_COOKIE_PATH', '/${name}/wp-admin' );
+define( 'PLUGINS_COOKIE_PATH', '/${name}/wp-content/plugins' );
+define( 'DISABLE_WP_CRON', true );
+define( 'WP_AUTO_UPDATE_CORE', false );
+define( 'WP_DEBUG', false );
+
+define( 'AUTH_KEY',         '$(random_secret 64)' );
+define( 'SECURE_AUTH_KEY',  '$(random_secret 64)' );
+define( 'LOGGED_IN_KEY',    '$(random_secret 64)' );
+define( 'NONCE_KEY',        '$(random_secret 64)' );
+define( 'AUTH_SALT',        '$(random_secret 64)' );
+define( 'SECURE_AUTH_SALT', '$(random_secret 64)' );
+define( 'LOGGED_IN_SALT',   '$(random_secret 64)' );
+define( 'NONCE_SALT',       '$(random_secret 64)' );
+
+\$table_prefix = 'wp_';
+
+if ( ! defined( 'ABSPATH' ) ) {
+    define( 'ABSPATH', __DIR__ . '/' );
+}
+require_once ABSPATH . 'wp-settings.php';
+PHP
+
+echo "Created ${name}"
+echo "URL: $(site_url "${name}")"

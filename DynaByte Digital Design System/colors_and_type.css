@@ -1,0 +1,197 @@
+/* =====================================================================
+   DynaByte Digital — Colors & Type
+   Source: brand logo (deep navy + electric blue + orange byte motif),
+   homepage on dynabytebd.com, and FB/Google Ads cluster page docs.
+===================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  /* ---------- BRAND COLORS ---------- */
+  /* The logo's two anchors: a deep navy for trust + a saturated electric
+     blue for energy, with an orange/amber accent that mimics the
+     "scattering byte" pixel motif coming off the B mark. */
+  --brand-navy:        #0B1B3A;   /* "DynaByte" wordmark dark */
+  --brand-navy-2:      #11244C;   /* one step up from navy for layered surfaces */
+  --brand-blue:        #1F7AEC;   /* primary action / link */
+  --brand-blue-deep:   #1457C2;   /* hover / pressed */
+  --brand-blue-bright: #2E9CFF;   /* logo highlight gradient stop */
+  --brand-cyan:        #6FC3FF;   /* glow / soft accent */
+  --brand-orange:      #F58A1F;   /* CTA accent / "byte" pixels */
+  --brand-orange-deep: #E26A00;   /* pressed accent */
+  --brand-amber:       #FFC24A;   /* small pixel highlight */
+
+  /* ---------- NEUTRALS ---------- */
+  --ink-900: #0B1B3A;   /* same as navy — primary text on light */
+  --ink-800: #1B2A4E;
+  --ink-700: #2C3A5C;
+  --ink-600: #4A5878;
+  --ink-500: #6E7A98;
+  --ink-400: #95A0BA;
+  --ink-300: #C2C9DB;
+  --ink-200: #E1E5EE;
+  --ink-100: #EEF1F7;
+  --ink-050: #F6F8FC;
+  --paper:   #FFFFFF;
+
+  /* ---------- SEMANTIC ---------- */
+  --fg-1:    var(--ink-900);   /* headings, primary text */
+  --fg-2:    var(--ink-700);   /* body */
+  --fg-3:    var(--ink-500);   /* secondary / labels */
+  --fg-mute: var(--ink-400);   /* hints */
+  --fg-on-dark: #FFFFFF;
+  --fg-on-dark-2: rgba(255,255,255,0.78);
+  --fg-on-dark-3: rgba(255,255,255,0.55);
+
+  --bg-page:    var(--paper);
+  --bg-soft:    var(--ink-050);
+  --bg-card:    var(--paper);
+  --bg-dark:    var(--brand-navy);
+  --bg-dark-2:  var(--brand-navy-2);
+
+  --line-1:  var(--ink-200);
+  --line-2:  var(--ink-300);
+  --line-on-dark: rgba(255,255,255,0.10);
+
+  --action:           var(--brand-blue);
+  --action-hover:     var(--brand-blue-deep);
+  --action-bright:    var(--brand-blue-bright);
+  --accent:           var(--brand-orange);
+  --accent-hover:     var(--brand-orange-deep);
+
+  --success: #1FAE6B;
+  --warning: #E8A300;
+  --danger:  #D9402B;
+
+  /* Signature gradients (from logo) */
+  --grad-blue:   linear-gradient(135deg, #2E9CFF 0%, #1F7AEC 50%, #1457C2 100%);
+  --grad-orange: linear-gradient(135deg, #FFC24A 0%, #F58A1F 60%, #E26A00 100%);
+  --grad-hero:   radial-gradient(120% 80% at 80% 0%, #1B3878 0%, #0B1B3A 60%, #060F22 100%);
+  --grad-cta:    linear-gradient(135deg, #1F7AEC 0%, #1457C2 100%);
+
+  /* ---------- TYPE ---------- */
+  --font-display: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body:    'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
+
+  /* Type scale (1.25 ratio, calibrated for landing pages) */
+  --fs-eyebrow: 0.8125rem;  /* 13px */
+  --fs-xs:      0.75rem;    /* 12px */
+  --fs-sm:      0.875rem;   /* 14px */
+  --fs-base:    1rem;       /* 16px */
+  --fs-md:      1.125rem;   /* 18px */
+  --fs-lg:      1.25rem;    /* 20px */
+  --fs-xl:      1.5rem;     /* 24px */
+  --fs-2xl:     2rem;       /* 32px */
+  --fs-3xl:     2.5rem;     /* 40px */
+  --fs-4xl:     3.25rem;    /* 52px */
+  --fs-5xl:     4rem;       /* 64px */
+
+  --lh-tight:  1.1;
+  --lh-snug:   1.25;
+  --lh-normal: 1.55;
+  --lh-relax:  1.7;
+
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.08em;
+  --tracking-eyebrow: 0.14em;
+
+  /* ---------- SPACING ---------- */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  24px;
+  --space-6:  32px;
+  --space-7:  48px;
+  --space-8:  64px;
+  --space-9:  96px;
+  --space-10: 128px;
+
+  /* ---------- RADIUS ---------- */
+  --r-xs:   4px;
+  --r-sm:   8px;
+  --r-md:   12px;
+  --r-lg:   16px;
+  --r-xl:   24px;
+  --r-2xl:  32px;
+  --r-pill: 999px;
+
+  /* ---------- SHADOWS ---------- */
+  --sh-1: 0 1px 2px rgba(11,27,58,0.06), 0 1px 1px rgba(11,27,58,0.04);
+  --sh-2: 0 4px 12px rgba(11,27,58,0.08), 0 2px 4px rgba(11,27,58,0.04);
+  --sh-3: 0 12px 32px rgba(11,27,58,0.10), 0 4px 8px rgba(11,27,58,0.05);
+  --sh-4: 0 24px 60px rgba(11,27,58,0.14), 0 8px 16px rgba(11,27,58,0.06);
+  --sh-glow-blue:   0 12px 36px rgba(31,122,236,0.35);
+  --sh-glow-orange: 0 12px 36px rgba(245,138,31,0.32);
+
+  /* ---------- LAYOUT ---------- */
+  --container: 1200px;
+  --container-narrow: 880px;
+  --gutter: clamp(20px, 4vw, 48px);
+
+  /* ---------- MOTION ---------- */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 140ms;
+  --dur-base: 220ms;
+  --dur-slow: 420ms;
+}
+
+/* =====================================================================
+   ELEMENT-LEVEL DEFAULTS
+===================================================================== */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  line-height: var(--lh-normal);
+  color: var(--fg-2);
+  background: var(--bg-page);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  color: var(--fg-1);
+  font-weight: 700;
+  letter-spacing: var(--tracking-tight);
+  margin: 0;
+  text-wrap: balance;
+}
+
+h1 { font-size: clamp(2.25rem, 4.4vw, var(--fs-5xl)); line-height: var(--lh-tight); font-weight: 800; }
+h2 { font-size: clamp(1.875rem, 3.4vw, var(--fs-3xl)); line-height: var(--lh-tight); font-weight: 800; }
+h3 { font-size: clamp(1.375rem, 2vw, var(--fs-xl));   line-height: var(--lh-snug);  font-weight: 700; }
+h4 { font-size: var(--fs-lg); line-height: var(--lh-snug); font-weight: 700; }
+h5 { font-size: var(--fs-md); line-height: var(--lh-snug); font-weight: 600; }
+h6 { font-size: var(--fs-base); line-height: var(--lh-snug); font-weight: 600; }
+
+p { margin: 0; line-height: var(--lh-relax); text-wrap: pretty; }
+p + p { margin-top: var(--space-4); }
+
+a {
+  color: var(--action);
+  text-decoration: none;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+a:hover { color: var(--action-hover); }
+
+strong, b { font-weight: 700; color: var(--fg-1); }
+
+small, .text-sm { font-size: var(--fs-sm); }
+
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: var(--fs-eyebrow);
+  font-weight: 600;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--action);
+}
+
+code, pre, kbd { font-family: var(--font-mono); font-size: 0.9em; }

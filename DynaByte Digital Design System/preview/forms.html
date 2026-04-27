@@ -1,0 +1,19 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin:0; padding:28px; background: var(--paper); display:grid; grid-template-columns: 1fr 1fr; gap:18px; max-width: 720px; }
+  label { display:block; font-size:13px; font-weight:600; color: var(--fg-1); margin-bottom:6px; }
+  .field { width:100%; padding: 12px 14px; border-radius: var(--r-md); border:1px solid var(--line-2); font-family: var(--font-body); font-size:14px; color: var(--fg-1); background: var(--paper); transition: border-color var(--dur-fast); }
+  .field:focus { outline: none; border-color: var(--brand-blue); box-shadow: 0 0 0 3px rgba(31,122,236,0.15); }
+  .field::placeholder { color: var(--fg-mute); }
+  select.field { appearance:none; background-image: linear-gradient(45deg, transparent 50%, var(--fg-3) 50%), linear-gradient(135deg, var(--fg-3) 50%, transparent 50%); background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%; background-size: 5px 5px, 5px 5px; background-repeat:no-repeat; padding-right: 36px; }
+  .full { grid-column: 1 / -1; }
+  textarea.field { resize: vertical; min-height: 70px; font-family: var(--font-body); }
+</style></head>
+<body>
+  <div><label>First Name</label><input class="field" placeholder="Murad"></div>
+  <div><label>Email Address</label><input class="field" type="email" placeholder="you@business.com"></div>
+  <div class="full"><label>Select Service</label>
+    <select class="field"><option>—Please choose an option—</option><option>Facebook Ads</option><option>Google Ads</option><option>Local SEO</option></select>
+  </div>
+</body></html>

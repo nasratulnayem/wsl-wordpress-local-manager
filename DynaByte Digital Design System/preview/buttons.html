@@ -1,0 +1,21 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin:0; padding:28px 32px; background: var(--paper); display:flex; gap:14px; flex-wrap:wrap; align-items:center; }
+  .btn { font-family: var(--font-body); font-weight:600; font-size:15px; padding:14px 24px; border-radius: var(--r-pill); border:0; cursor:pointer; transition: all var(--dur-base) var(--ease-out); display:inline-flex; align-items:center; gap:8px; }
+  .btn-primary { background: var(--grad-cta); color:#fff; box-shadow: var(--sh-2); }
+  .btn-primary:hover { box-shadow: var(--sh-glow-blue); transform: translateY(-2px); }
+  .btn-accent { background: var(--brand-orange); color:#fff; box-shadow: var(--sh-2); }
+  .btn-accent:hover { background: var(--brand-orange-deep); box-shadow: var(--sh-glow-orange); transform: translateY(-2px); }
+  .btn-ghost { background: transparent; color: var(--brand-blue); border: 1.5px solid var(--brand-blue); }
+  .btn-ghost:hover { background: rgba(31,122,236,0.06); }
+  .btn-dark { background: var(--brand-navy); color:#fff; }
+  .btn-link { background: transparent; color: var(--brand-blue); padding: 8px 0; }
+</style></head>
+<body>
+  <button class="btn btn-primary">Book a Free Strategy Call →</button>
+  <button class="btn btn-accent">Get Started</button>
+  <button class="btn btn-ghost">View Case Studies</button>
+  <button class="btn btn-dark">Contact Us</button>
+  <button class="btn btn-link">Read more →</button>
+</body></html>

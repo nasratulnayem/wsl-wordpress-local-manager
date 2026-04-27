@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+set -euo pipefail
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/../config/common.sh"
+
+stopped=0
+mariadb_stopped=0
+
+stop_from_pid_file() {
+  local pid_file="$1"
+  local expected_pattern="$2"
+  local stopped_var="${3:-}"
+
+  if pid_matches "${pid_file}" "${expected_pattern}"; then
+    local pid
+    pid="$(cat "${pid_file}")"
+    kill "${pid}" 2>/dev/null || true
+    sleep 1
+    kill -9 "${pid}" 2>/dev/null || true
+    stopped=1
+    if [[ -n "${stopped_var}" ]]; then
+      printf -v "${stopped_var}" '%s' 1
+    fi
+  fi
+
+  rm -f "${pid_file}"
+}
+
+stop_from_pid_file "${PHP_PID_FILE}" "${PHP_BIN} -S ${PANEL_HOST}:${PANEL_PORT}"
+stop_from_pid_file "${MARIADB_PID_FILE}" "${MARIADBD_BIN}" mariadb_stopped
+
+pkill -f "${PHP_BIN} -S ${PANEL_HOST}:${PANEL_PORT}" 2>/dev/null || true
+if pkill -f "${MARIADBD_BIN} --datadir=${MARIADB_DATA_DIR}" 2>/dev/null; then
+  stopped=1
+  mariadb_stopped=1
+fi
+
+if [[ "${mariadb_stopped}" -eq 1 ]]; then
+  rm -f "${MARIADB_SOCKET}"
+fi
+
+if [[ "${stopped}" -eq 1 ]]; then
+  echo "Stopped WordPress Local WSL"
+else
+  echo "WordPress Local WSL is not running"
+fi

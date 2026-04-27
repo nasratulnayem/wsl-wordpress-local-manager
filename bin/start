@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+set -euo pipefail
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/../config/common.sh"
+
+start_detached() {
+  local pid_file="$1"
+  local stdout_file="$2"
+  shift
+  shift
+
+  setsid "$@" </dev/null >>"${stdout_file}" 2>&1 &
+  local pid=$!
+  echo "${pid}" > "${pid_file}"
+}
+
+ensure_dirs
+extract_wordpress_source
+require_wordpress_source
+
+mariadb_ready() {
+  "${MYSQLADMIN_BIN}" --protocol=SOCKET --socket="${MARIADB_SOCKET}" -u"${DB_ROOT_USER}" ping >/dev/null 2>&1
+}
+
+if [[ ! -f "${MARIADB_INIT_MARKER}" ]]; then
+  echo "Initializing MariaDB data directory..."
+  rm -rf "${MARIADB_DATA_DIR:?}/"*
+  "${MARIADB_INSTALL_DB_BIN}" \
+    --auth-root-authentication-method=normal \
+    --datadir="${MARIADB_DATA_DIR}" \
+    --skip-test-db >/dev/null
+  touch "${MARIADB_INIT_MARKER}"
+fi
+
+if mariadb_ready; then
+  echo "MariaDB already running"
+else
+  rm -f "${MARIADB_SOCKET}" "${MARIADB_PID_FILE}"
+  start_detached "${MARIADB_PID_FILE}" /dev/null "${MARIADBD_BIN}" \
+    --datadir="${MARIADB_DATA_DIR}" \
+    --socket="${MARIADB_SOCKET}" \
+    --skip-networking \
+    --pid-file="${MARIADB_PID_FILE}" \
+    --log-error="${MARIADB_LOG_FILE}"
+  for _ in $(seq 1 30); do
+    if "${MYSQLADMIN_BIN}" --protocol=SOCKET --socket="${MARIADB_SOCKET}" -u"${DB_ROOT_USER}" ping >/dev/null 2>&1; then
+      break
+    fi
+    sleep 1
+  done
+fi
+
+if ! mariadb_ready; then
+  echo "MariaDB failed to start. Check ${MARIADB_LOG_FILE}" >&2
+  exit 1
+fi
+
+echo "MariaDB started"
+
+if pid_matches "${PHP_PID_FILE}" "${PHP_BIN} -S ${PANEL_HOST}:${PANEL_PORT}"; then
+  echo "PHP panel already running at ${PANEL_URL}"
+  exit 0
+fi
+
+rm -f "${PHP_PID_FILE}"
+start_detached "${PHP_PID_FILE}" "${PHP_LOG_FILE}" "${PHP_BIN}" -S "${PANEL_HOST}:${PANEL_PORT}" -t "${ROOT_DIR}" "${ROUTER_FILE}"
+sleep 2
+
+if ! kill -0 "$(cat "${PHP_PID_FILE}")" 2>/dev/null; then
+  echo "PHP panel failed to start. Check ${PHP_LOG_FILE}" >&2
+  exit 1
+fi
+
+echo "WordPress Local WSL started at ${PANEL_URL}"
