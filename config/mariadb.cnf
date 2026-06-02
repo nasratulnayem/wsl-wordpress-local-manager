@@ -1,0 +1,35 @@
+[mysqld]
+# Data directory
+datadir=/home/black/wordpress/data/mariadb
+
+# Socket
+socket=/tmp/wordpress-wsl/mariadb.sock
+
+# InnoDB settings for crash recovery and stability
+innodb_flush_log_at_trx_commit=1
+innodb_flush_method=O_DIRECT
+innodb_file_per_table=1
+innodb_log_file_size=256M
+innodb_log_buffer_size=64M
+innodb_buffer_pool_size=512M
+
+# Crash recovery
+innodb_fast_shutdown=0
+innodb_force_recovery=0
+
+# Connection settings
+max_connections=200
+wait_timeout=600
+interactive_timeout=600
+
+# Disable networking (socket only)
+skip-networking
+
+# Logging
+log_error=/tmp/wordpress-wsl/mariadb.log
+
+[client]
+socket=/tmp/wordpress-wsl/mariadb.sock
+
+[mysql]
+socket=/tmp/wordpress-wsl/mariadb.sock

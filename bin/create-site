@@ -85,5 +85,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once ABSPATH . 'wp-settings.php';
 PHP
 
+echo "Installing WordPress..."
+
+SITE_URL="http://127.0.0.1:8080/${name}"
+wp core install --path="${dir}" \
+  --url="${SITE_URL}" \
+  --title="${name}" \
+  --admin_user="nayem" \
+  --admin_password="carter" \
+  --admin_email="devnayem30@gmail.com" \
+  --skip-email 2>/dev/null || true
+
+MIGRATION_PLUGIN="${ROOT_DIR}/source/all-in-one-wp-migration (100GB).zip"
+if [[ -f "${MIGRATION_PLUGIN}" ]]; then
+  echo "Installing All-in-One WP Migration plugin..."
+  mkdir -p "${dir}/wp-content/plugins/"
+  unzip -o "${MIGRATION_PLUGIN}" -d "${dir}/wp-content/plugins/" 2>/dev/null || true
+  PLUGIN_DIRS=("${dir}/wp-content/plugins/"all-in-one-wp-migration)
+  if [[ -d "${PLUGIN_DIRS}" ]]; then
+    wp plugin activate all-in-one-wp-migration --path="${dir}" 2>/dev/null || true
+  fi
+fi
+
 echo "Created ${name}"
 echo "URL: $(site_url "${name}")"

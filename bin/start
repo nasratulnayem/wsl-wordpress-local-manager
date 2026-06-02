@@ -18,8 +18,15 @@ ensure_dirs
 extract_wordpress_source
 require_wordpress_source
 
+MARIADB_CNF="${SCRIPT_DIR}/../config/mariadb.cnf"
+
 mariadb_ready() {
   "${MYSQLADMIN_BIN}" --protocol=SOCKET --socket="${MARIADB_SOCKET}" -u"${DB_ROOT_USER}" ping >/dev/null 2>&1
+}
+
+cleanup_failed_startup() {
+  rm -f "${MARIADB_SOCKET}" "${MARIADB_PID_FILE}"
+  rm -f "${MARIADB_DATA_DIR}"/*.err
 }
 
 if [[ ! -f "${MARIADB_INIT_MARKER}" ]]; then
@@ -28,22 +35,20 @@ if [[ ! -f "${MARIADB_INIT_MARKER}" ]]; then
   "${MARIADB_INSTALL_DB_BIN}" \
     --auth-root-authentication-method=normal \
     --datadir="${MARIADB_DATA_DIR}" \
-    --skip-test-db >/dev/null
+    --skip-test-db
   touch "${MARIADB_INIT_MARKER}"
 fi
 
 if mariadb_ready; then
   echo "MariaDB already running"
 else
-  rm -f "${MARIADB_SOCKET}" "${MARIADB_PID_FILE}"
+  cleanup_failed_startup
+  echo "Starting MariaDB..."
   start_detached "${MARIADB_PID_FILE}" /dev/null "${MARIADBD_BIN}" \
-    --datadir="${MARIADB_DATA_DIR}" \
-    --socket="${MARIADB_SOCKET}" \
-    --skip-networking \
-    --pid-file="${MARIADB_PID_FILE}" \
-    --log-error="${MARIADB_LOG_FILE}"
+    --defaults-file="${MARIADB_CNF}" \
+    --user="${USER}"
   for _ in $(seq 1 30); do
-    if "${MYSQLADMIN_BIN}" --protocol=SOCKET --socket="${MARIADB_SOCKET}" -u"${DB_ROOT_USER}" ping >/dev/null 2>&1; then
+    if mariadb_ready; then
       break
     fi
     sleep 1
@@ -52,6 +57,7 @@ fi
 
 if ! mariadb_ready; then
   echo "MariaDB failed to start. Check ${MARIADB_LOG_FILE}" >&2
+  cat "${MARIADB_LOG_FILE}" 2>/dev/null || true
   exit 1
 fi
 

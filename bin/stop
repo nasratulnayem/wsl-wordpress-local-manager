@@ -6,6 +6,32 @@ source "${SCRIPT_DIR}/../config/common.sh"
 stopped=0
 mariadb_stopped=0
 
+mariadb_graceful_shutdown() {
+  if "${MYSQLADMIN_BIN}" --protocol=SOCKET --socket="${MARIADB_SOCKET}" -u"${DB_ROOT_USER}" shutdown 2>/dev/null; then
+    echo "MariaDB graceful shutdown complete"
+    mariadb_stopped=1
+    sleep 2
+    return 0
+  fi
+
+  if pid_matches "${MARIADB_PID_FILE}" "${MARIADBD_BIN}"; then
+    local pid
+    pid="$(cat "${MARIADB_PID_FILE}")"
+    kill -SIGTERM "${pid}" 2>/dev/null || true
+    for _ in $(seq 1 10); do
+      if ! kill -0 "${pid}" 2>/dev/null; then
+        mariadb_stopped=1
+        break
+      fi
+      sleep 1
+    done
+    if [[ "${mariadb_stopped}" -ne 1 ]]; then
+      kill -9 "${pid}" 2>/dev/null || true
+      mariadb_stopped=1
+    fi
+  fi
+}
+
 stop_from_pid_file() {
   local pid_file="$1"
   local expected_pattern="$2"
@@ -26,21 +52,23 @@ stop_from_pid_file() {
   rm -f "${pid_file}"
 }
 
-stop_from_pid_file "${PHP_PID_FILE}" "${PHP_BIN} -S ${PANEL_HOST}:${PANEL_PORT}"
-stop_from_pid_file "${MARIADB_PID_FILE}" "${MARIADBD_BIN}" mariadb_stopped
+echo "Stopping WordPress Local WSL..."
 
+stop_from_pid_file "${PHP_PID_FILE}" "${PHP_BIN} -S ${PANEL_HOST}:${PANEL_PORT}"
 pkill -f "${PHP_BIN} -S ${PANEL_HOST}:${PANEL_PORT}" 2>/dev/null || true
-if pkill -f "${MARIADBD_BIN} --datadir=${MARIADB_DATA_DIR}" 2>/dev/null; then
-  stopped=1
-  mariadb_stopped=1
+if [[ "${stopped}" -eq 1 ]]; then
+  echo "PHP stopped"
 fi
+
+mariadb_graceful_shutdown
 
 if [[ "${mariadb_stopped}" -eq 1 ]]; then
-  rm -f "${MARIADB_SOCKET}"
+  rm -f "${MARIADB_SOCKET}" "${MARIADB_PID_FILE}"
+  echo "MariaDB stopped"
 fi
 
-if [[ "${stopped}" -eq 1 ]]; then
-  echo "Stopped WordPress Local WSL"
+if [[ "${stopped}" -eq 1 ]] || [[ "${mariadb_stopped}" -eq 1 ]]; then
+  echo "WordPress Local WSL stopped"
 else
   echo "WordPress Local WSL is not running"
 fi
