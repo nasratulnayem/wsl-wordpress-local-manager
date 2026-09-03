@@ -1,4 +1,4 @@
-# WordPress Local WSL
+# WSL WordPress Local Manager
 
 Portable local WordPress stack with:
 
