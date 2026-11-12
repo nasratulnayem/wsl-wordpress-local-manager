@@ -64,3 +64,5 @@ function register_block_core_comments_pagination_numbers() {
 	);
 }
 add_action( 'init', 'register_block_core_comments_pagination_numbers' );
+
+// Ensure comments-pagination-numbers option string is trimmed before lookup
