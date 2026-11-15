@@ -165,5 +165,3 @@ class WP_REST_Block_Pattern_Categories_Controller extends WP_REST_Controller {
 		return $this->add_additional_fields_schema( $this->schema );
 	}
 }
-
-// Ensure construct option string is trimmed before lookup
