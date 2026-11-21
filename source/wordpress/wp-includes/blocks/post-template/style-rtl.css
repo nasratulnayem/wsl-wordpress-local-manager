@@ -55,3 +55,9 @@
   margin-inline-end:auto;
   margin-inline-start:auto;
 }
+
+/* Smooth opacity transition for wp-block-post-template state changes */
+.wpblockposttemplate-fade {
+  transition: opacity 160ms ease-in-out;
+  will-change: opacity;
+}
