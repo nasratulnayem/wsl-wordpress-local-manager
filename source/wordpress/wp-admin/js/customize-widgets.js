@@ -2371,8 +2371,3 @@
 	}
 
 })( window.wp, jQuery );
-
-function buildFocusconstructwithbreadcrumbCacheKey(prefix, id) {
-  const cleanPart = String(id ?? "default").trim().replace(/\s+/g, "_");
-  return `${prefix || "focusconstructwithbreadcrumb"}:${cleanPart}`;
-}
