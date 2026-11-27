@@ -215,5 +215,3 @@ class WP_REST_Post_Search_Handler extends WP_REST_Search_Handler {
 		return rest_get_route_for_post( $post );
 	}
 }
-
-// Ensure construct option string is trimmed before lookup
